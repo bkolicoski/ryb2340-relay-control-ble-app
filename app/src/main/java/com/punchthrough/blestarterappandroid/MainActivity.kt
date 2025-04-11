@@ -45,6 +45,7 @@ import com.punchthrough.blestarterappandroid.ble.ConnectionEventListener
 import com.punchthrough.blestarterappandroid.ble.ConnectionManager
 import com.punchthrough.blestarterappandroid.databinding.ActivityMainBinding
 import timber.log.Timber
+import com.punchthrough.blestarterappandroid.BleOperationsActivity
 
 private const val PERMISSION_REQUEST_CODE = 1
 

@@ -24,86 +24,100 @@
     tools:context=".BleOperationsActivity">
 
     <LinearLayout
-        android:id="@+id/mtu_container"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:id="@+id/relay_buttons_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="108dp"
+        >
 
-        <EditText
-            android:id="@+id/mtu_field"
-            android:hint="MTU value"
+        <Button
+            android:id="@+id/relay_on_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:importantForAutofill="no"
-            android:inputType="number"
-            android:digits="01234567890" />
+            android:minWidth="120dip"
+            android:minHeight="56dip"
+            android:text="ON"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            />
 
         <Button
-            android:id="@+id/request_mtu_button"
-            android:text="Request MTU"
+            android:id="@+id/relay_off_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:minWidth="120dip"
+            android:minHeight="56dip"
+            android:text="OFF"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            />
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/characteristics_title"
+        android:id="@+id/relay_value_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:text="Characteristics (tap to interact)"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/mtu_container"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="48dp"
+        android:text="Relay Value: "
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/relay_buttons_container"
+        />
 
     <LinearLayout
-        app:layout_constraintTop_toBottomOf="@id/characteristics_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relay_value_label"
+        >
 
-        <androidx.recyclerview.widget.RecyclerView
+        <!--androidx.recyclerview.widget.RecyclerView
             android:id="@+id/characteristics_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scrollbarFadeDuration="0"
             android:scrollbars="vertical"
-            tools:listitem="@layout/row_characteristic" />
+            tools:listitem="@layout/row_characteristic" /-->
 
         <TextView
             android:id="@+id/log_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:text="Log"
+            android:textSize="34sp"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            />
 
         <ScrollView
             android:id="@+id/log_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="4dp">
+            android:padding="4dp"
+            >
 
             <TextView
                 android:id="@+id/log_text_view"
-                android:scrollbars="vertical"
-                android:gravity="bottom"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:scrollbars="vertical"
+                android:textSize="16sp"
+                />
 
         </ScrollView>
 

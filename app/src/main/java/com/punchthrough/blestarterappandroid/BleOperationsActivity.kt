@@ -46,6 +46,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import android.util.Log
+
+private val RELAY_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("f000c0c1-0451-4000-b000-000000000000")
+private val RELAY_NOTIFICATION_CHARACTERISTIC_UUID = UUID.fromString("f000c0c2-0451-4000-b000-000000000000")
 
 class BleOperationsActivity : AppCompatActivity() {
 
@@ -92,18 +96,42 @@ class BleOperationsActivity : AppCompatActivity() {
             setDisplayShowTitleEnabled(true)
             title = getString(R.string.ble_playground)
         }
-        setupRecyclerView()
-        binding.requestMtuButton.setOnClickListener {
-            val userInput = binding.mtuField.text
-            if (userInput.isNotEmpty() && userInput.isNotBlank()) {
-                userInput.toString().toIntOrNull()?.let { mtu ->
-                    log("Requesting for MTU value of $mtu")
-                    ConnectionManager.requestMtu(device, mtu)
-                } ?: log("Invalid MTU value: $userInput")
-            } else {
-                log("Please specify a numeric value for desired ATT MTU (23-517)")
-            }
-            hideKeyboard()
+
+        binding.relayOnButton.setOnClickListener {
+            log("Sending RELAY_ON")
+            writeRelayValue("RELAY_ON")
+        }
+
+        binding.relayOffButton.setOnClickListener {
+            log("Sending RELAY_OFF")
+            writeRelayValue("RELAY_OFF")
+        }
+
+        enableRelayNotifications()
+    }
+
+    private fun writeRelayValue(value: String) {
+        val characteristic = characteristics.find { it.uuid == RELAY_CONTROL_CHARACTERISTIC_UUID }
+        if (characteristic != null) {
+            Log.d("BleOperations", "Relay control characteristic found: ${characteristic.uuid}")
+            val bytes = value.toByteArray(Charsets.UTF_8)
+            log("Writing to ${characteristic.uuid}: $value")
+            ConnectionManager.writeCharacteristic(device, characteristic, bytes)
+        } else {
+            Log.e("BleOperations", "Relay control characteristic not found!")
+            log("Relay control characteristic not found!")
+        }
+    }
+
+    private fun enableRelayNotifications() {
+        val characteristic = characteristics.find { it.uuid == RELAY_NOTIFICATION_CHARACTERISTIC_UUID }
+        if (characteristic != null) {
+            Log.d("BleOperations", "Relay notification characteristic found: ${characteristic.uuid}")
+            log("Enabling notifications on ${characteristic.uuid}")
+            ConnectionManager.enableNotifications(device, characteristic)
+        } else {
+            Log.e("BleOperations", "Relay notification characteristic not found!")
+            log("Relay notification characteristic not found!")
         }
     }
 
@@ -121,24 +149,6 @@ class BleOperationsActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun setupRecyclerView() {
-        binding.characteristicsRecyclerView.apply {
-            adapter = characteristicAdapter
-            layoutManager = LinearLayoutManager(
-                this@BleOperationsActivity,
-                RecyclerView.VERTICAL,
-                false
-            )
-            isNestedScrollingEnabled = false
-
-            itemAnimator.let {
-                if (it is SimpleItemAnimator) {
-                    it.supportsChangeAnimations = false
-                }
-            }
-        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -234,7 +244,15 @@ class BleOperationsActivity : AppCompatActivity() {
             }
 
             onCharacteristicChanged = { _, characteristic, value ->
+                Log.d("BleOperations", "Value changed on ${characteristic.uuid}: ${value.toHexString()}")
                 log("Value changed on ${characteristic.uuid}: ${value.toHexString()}")
+                if (characteristic.uuid == RELAY_NOTIFICATION_CHARACTERISTIC_UUID) {
+                    val relayValue = String(value, Charsets.UTF_8)
+                    Log.d("BleOperations", "Relay value received: $relayValue")
+                    runOnUiThread {
+                        binding.relayValueLabel.text = "Relay Value: $relayValue"
+                    }
+                }
             }
 
             onNotificationsEnabled = { _, characteristic ->
